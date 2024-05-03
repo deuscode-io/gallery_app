@@ -26,11 +26,6 @@ migrate_working_dir/
 .pub/
 /build/
 
-# Tests related
-test/**/goldens/**/*.*
-test/**/failures/**/*.*
-!test/**/goldens/ci/*.*
-
 # Symbolication related
 app.*.symbols
 
@@ -57,4 +52,4 @@ ios/build/**
 lib/DI/setup_automatic_di.config.dart
 
 # Secrets.
-lib/utils/countries/full_country_list.dart
+lib/secrets.dart
