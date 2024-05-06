@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_app/DI/setup_automatic_di.dart';
 import 'package:gallery_app/DI/setup_manual_di.dart';
-import 'package:gallery_app/features/gallery/gallery_page.dart';
+import 'package:gallery_app/router_config.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,13 +17,17 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return SafeArea(
+
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        routerConfig: routerConfig,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
 
     // return MultiBlocProvider(
