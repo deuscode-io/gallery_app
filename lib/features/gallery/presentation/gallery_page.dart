@@ -33,11 +33,27 @@ class GalleryPage extends StatefulWidget {
 class _GalleryPageState extends State<GalleryPage> {
   late GridViewSize _gridViewSize;
   late UniqueKey _key;
+  late ScrollController _scrollController;
+  late MediaBloc _mediaBloc;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent) {
+        _mediaBloc.add(ReachScrollEnd());
+      }
+    });
+    _mediaBloc = Injector.get();
     _key = UniqueKey();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,7 +63,7 @@ class _GalleryPageState extends State<GalleryPage> {
       backgroundColor: const Color(0xFFE1DFDF),
       body: BlocProvider<MediaBloc>(
         key: _key,
-        create: (_) => Injector.get()
+        create: (_) => _mediaBloc
           ..add(
             OpenPage(
               query: '',
@@ -56,84 +72,67 @@ class _GalleryPageState extends State<GalleryPage> {
           ),
         child: BlocBuilder<MediaBloc, MediaState>(
           builder: (context, state) {
-            final mediaBloc = context.read<MediaBloc>();
             final textTheme = Theme.of(context).textTheme;
-
-            return NotificationListener(
-              onNotification: (notification) {
-                if (notification is ScrollNotification &&
-                    notification.metrics.pixels >
-                        notification.metrics.maxScrollExtent) {
-                  mediaBloc.add(ReachScrollEnd());
-                }
-
-                return false;
-              },
-              child: Scrollbar(
-                child: CustomScrollView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    SliverAppBar(
-                      floating: true,
-                      title: SearchField(
-                        onSearch: (text) {
-                          mediaBloc.add(NewQuery(text));
-                        },
-                      ),
+            return Scrollbar(
+              controller: _scrollController,
+              child: CustomScrollView(
+                controller: _scrollController,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: [
+                  SliverAppBar(
+                    floating: true,
+                    title: SearchField(
+                      onSearch: (text) {
+                        _mediaBloc.add(NewQuery(text));
+                      },
                     ),
-                    if (state.loading && state.media.isEmpty)
-                      const SliverFillRemaining(
-                        child: Center(
-                          child: CupertinoActivityIndicator(
-                            radius: 20,
-                          ),
+                  ),
+                  if (state.loading && state.media.isEmpty)
+                    const SliverFillRemaining(
+                      child: Center(
+                        child: CupertinoActivityIndicator(
+                          radius: 20,
                         ),
                       ),
-                    if (!state.loading && state.media.isEmpty)
-                      SliverFillRemaining(
-                        child: Center(
+                    ),
+                  if (!state.loading && state.media.isEmpty)
+                    SliverFillRemaining(
+                      child: Center(
+                        child: Text(
+                          'Nothing found',
+                          style: textTheme.headlineMedium,
+                        ),
+                      ),
+                    ),
+                  if (state.exception != null)
+                    SliverFillRemaining(
+                      child: Center(
+                        child: ElevatedButton(
+                          onPressed: () => _mediaBloc.add(
+                            ReloadButtonPressed(),
+                          ),
                           child: Text(
-                            'Nothing found',
+                            'Reload content',
                             style: textTheme.headlineMedium,
                           ),
                         ),
                       ),
-                    if (state.exception != null)
-                      SliverFillRemaining(
-                        child: Center(
-                          child: ElevatedButton(
-                            onPressed: () => mediaBloc.add(
-                              ReloadButtonPressed(),
-                            ),
-                            child: Text(
-                              'Reload content',
-                              style: textTheme.headlineMedium,
-                            ),
-                          ),
-                        ),
-                      ),
-                    AppGridView(
-                      crossAxisCount: _gridViewSize.crossAxisCount,
-                      size: _gridViewSize.size,
-                      childAspectRatio: _gridViewSize.childAspectRatio,
-                      media: [
-                        ...state.media,
-                        if (state.loading) MediaLoading(),
-                      ],
                     ),
-                  ],
-                ),
+                  AppGridView(
+                    crossAxisCount: _gridViewSize.crossAxisCount,
+                    size: _gridViewSize.size,
+                    childAspectRatio: _gridViewSize.childAspectRatio,
+                    media: [
+                      ...state.media,
+                      if (state.loading) MediaLoading(),
+                    ],
+                  ),
+                ],
               ),
             );
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          setState(() => _key = UniqueKey());
-        },
-        label: const Text('Reset'),
       ),
     );
   }
