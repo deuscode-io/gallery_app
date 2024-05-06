@@ -18,7 +18,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -29,17 +28,5 @@ class App extends StatelessWidget {
         routerConfig: routerConfig,
       ),
     );
-
-    // return MultiBlocProvider(
-    //   providers: [],
-    //   child: MaterialApp(
-    //     title: 'Flutter Demo',
-    //     theme: ThemeData(
-    //       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-    //       useMaterial3: true,
-    //     ),
-    //     home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    //   ),
-    // );
   }
 }

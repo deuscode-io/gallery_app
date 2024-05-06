@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gallery_app/features/widgets/suffix_icon_button.dart';
+import 'package:gallery_app/features/gallery/presentation/widgets/suffix_icon_button.dart';
 
 class SearchField extends StatefulWidget {
   const SearchField({super.key, required this.onSearch});
@@ -55,7 +55,7 @@ class _SearchFieldState extends State<SearchField> {
   void _onSearchChanged(String text) {
     _updateSuffixIconButtonVisibility();
     _debouncer?.cancel();
-    _debouncer = Timer(const Duration(milliseconds: 2000), () {
+    _debouncer = Timer(const Duration(milliseconds: 500), () {
       widget.onSearch.call(text.trim());
     });
   }

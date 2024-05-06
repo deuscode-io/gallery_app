@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_app/features/widgets/single_metric.dart';
+import 'package:gallery_app/features/gallery/presentation/widgets/single_metric.dart';
 
 class MetricGroups extends StatelessWidget {
   const MetricGroups({
@@ -25,7 +25,7 @@ class MetricGroups extends StatelessWidget {
           type: MetricType.likes,
           onTap: onLikesTap,
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         SingleMetric(
           value: viewsValue,
           type: MetricType.views,

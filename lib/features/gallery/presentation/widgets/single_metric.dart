@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
+
+final _formatter = intl.NumberFormat.compact(
+  locale: "en_US",
+  explicitSign: false,
+);
 
 enum MetricType {
   likes,
@@ -68,14 +74,14 @@ class SingleMetric extends StatelessWidget {
           child: Row(
             textDirection: type.textDirection,
             children: [
-              Icon(type.iconData, size: 18),
+              Icon(type.iconData, size: 16),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  value.toString(),
+                  _formatter.format(value),
                   overflow: TextOverflow.ellipsis,
                   textAlign: type.textAlign,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ],

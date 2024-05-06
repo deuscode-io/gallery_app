@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:gallery_app/features/gallery/models/media_hit.dart';
+import 'package:gallery_app/features/gallery/data/models/media_hit.dart';
 
 part 'media_hits.freezed.dart';
 part 'media_hits.g.dart';
