@@ -10,7 +10,6 @@ const _timeout = Duration(seconds: 10);
 void setupManualDI() {
   final dio = Dio(
     BaseOptions(
-      sendTimeout: _timeout,
       connectTimeout: _timeout,
       baseUrl: baseUrl,
     ),
