@@ -153,6 +153,7 @@ void main() {
           final scrollView = tester.widget<CustomScrollView>(
             find.byType(CustomScrollView),
           );
+
           final controller = scrollView.controller;
           final maxScrollExtent = controller?.position.maxScrollExtent ?? 100;
 
@@ -169,6 +170,46 @@ void main() {
       );
     },
   );
+
+  group(
+    'GIVEN $GalleryPage to test grid view calculation',
+    () {
+      testWidgets(
+        'WHEN the screen size is 800 x 600',
+        (tester) async {
+          await tester.pumpAndMock(MediaState(media: [_media]));
+
+          final appGridView = tester.widget<AppGridView>(
+            find.byType(AppGridView),
+          );
+
+          verify(() => _mediaBloc.add(OpenPage(query: '', perPage: 30)));
+          expect(appGridView.crossAxisCount, 6);
+          expect(appGridView.size, 133.0);
+          expect(appGridView.childAspectRatio, 0.786);
+        },
+      );
+
+      testWidgets(
+        'WHEN the screen size is 600 x 800',
+        (tester) async {
+          await tester.pumpAndMock(
+            MediaState(media: [_media]),
+            size: const Size(600, 800),
+          );
+
+          final appGridView = tester.widget<AppGridView>(
+            find.byType(AppGridView),
+          );
+
+          verify(() => _mediaBloc.add(OpenPage(query: '', perPage: 35)));
+          expect(appGridView.crossAxisCount, 5);
+          expect(appGridView.size, 120.0);
+          expect(appGridView.childAspectRatio, 0.769);
+        },
+      );
+    },
+  );
 }
 
 void _mockMediaState(MediaState state) {
@@ -178,18 +219,24 @@ void _mockMediaState(MediaState state) {
 }
 
 extension on WidgetTester {
-  Future<void> appPumpWidget() async {
+  Future<void> appPumpWidget(Size size) async {
     return pumpWidget(
-      const MaterialApp(
-        home: Material(
-          child: GalleryPage(),
+      MediaQuery(
+        data: MediaQueryData(size: size),
+        child: const MaterialApp(
+          home: Material(
+            child: GalleryPage(),
+          ),
         ),
       ),
     );
   }
 
-  Future<void> pumpAndMock(MediaState state) async {
+  Future<void> pumpAndMock(
+    MediaState state, {
+    Size size = const Size(800, 600),
+  }) async {
     _mockMediaState(state);
-    await appPumpWidget();
+    await appPumpWidget(size);
   }
 }
