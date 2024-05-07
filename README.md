@@ -10,3 +10,4 @@ https://deuscode-io.github.io/gallery_app_deployed/
 3. Handle loading, loaded, empty and error states
 4. Navigation between list and detail with hero animation
 5. Network requests are moved to a separate file.
+6. Unit tests
