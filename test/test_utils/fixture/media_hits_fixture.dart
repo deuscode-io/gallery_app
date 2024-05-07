@@ -1,21 +1,21 @@
 import 'package:gallery_app/features/gallery/data/models/media_hits.dart';
 
 class MediaHitsFixture {
-  static MediaHits obj() {
-    return MediaHits.fromJson(MediaHitsFixture.json());
+  static MediaHits obj({int id = 1}) {
+    return MediaHits.fromJson(MediaHitsFixture.json(id: id));
   }
 
-  static Map<String, dynamic> json() {
+  static Map<String, dynamic> json({int id = 1}) {
     return {
-      'total': 1,
+      'total': id,
       'hits': [
         {
-          'id': 1,
+          'id': id,
           'type': 'photo',
           'previewURL': 'url',
           'largeImageURL': 'largeUrl',
-          'views': 1,
-          'likes': 1,
+          'views': id,
+          'likes': id,
         }
       ]
     };
