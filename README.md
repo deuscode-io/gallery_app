@@ -11,3 +11,8 @@ https://deuscode-io.github.io/gallery_app_deployed/
 4. Navigation between list and detail with hero animation
 5. Network requests are moved to a separate file.
 6. Unit tests
+
+
+<img width="1348" alt="Screenshot at May 07 6-50-23 PM" src="https://github.com/deuscode-io/gallery_app/assets/165549052/4c204dda-cfee-40a1-9a86-7e6b218572ee">
+
+
