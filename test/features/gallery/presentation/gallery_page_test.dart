@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gallery_app/DI/dependency_registrar.dart';
+import 'package:gallery_app/features/gallery/data/models/media_hit.dart';
 import 'package:gallery_app/features/gallery/presentation/blocs/media_bloc.dart';
 import 'package:gallery_app/features/gallery/presentation/blocs/media_event.dart';
 import 'package:gallery_app/features/gallery/presentation/blocs/media_state.dart';
@@ -16,6 +17,8 @@ class MockMediaBloc extends MockBloc<MediaEvent, MediaState>
     implements MediaBloc {}
 
 final MediaBloc _mediaBloc = MockMediaBloc();
+
+final _media = MediaHitsFixture.obj().hits.first;
 
 void main() {
   setUpAll(() {
@@ -138,45 +141,32 @@ void main() {
         },
       );
 
-      // testWidgets(
-      //   'WHEN nothing is loaded '
-      //   'THEN an empty scene is displayed',
-      //   (tester) async {
-      //     await tester.pumpAndMock(const MediaState());
-      //
-      //     expect(find.byType(LoadedEmpty), findsOneWidget);
-      //   },
-      // );
-      //
-      // testWidgets(
-      //   'WHEN any page (other than the first page) is loaded '
-      //   'THEN there is a widget to show the loading process',
-      //   (tester) async {
-      //     await tester.pumpAndMock(
-      //       MediaState(
-      //         loading: true,
-      //         media: MediaHitsFixture.obj().hits,
-      //       ),
-      //     );
-      //
-      //     expect(find.byType(AppGridView), findsOneWidget);
-      //   },
-      // );
-      //
-      // testWidgets(
-      //   'WHEN any page is loaded (except the first page) '
-      //   'THEN a widget appears showing the loading process',
-      //   (tester) async {
-      //     await tester.pumpAndMock(
-      //       MediaState(
-      //         loading: true,
-      //         media: MediaHitsFixture.obj().hits,
-      //       ),
-      //     );
-      //
-      //     expect(find.byType(CupertinoActivityIndicator), findsOneWidget);
-      //   },
-      // );
+      testWidgets(
+        'WHEN the scroll reached the end of the list',
+        (tester) async {
+          await tester.pumpAndMock(
+            MediaState(
+              media: List<MediaHit>.generate(30, (index) => _media),
+            ),
+          );
+
+          final scrollView = tester.widget<CustomScrollView>(
+            find.byType(CustomScrollView),
+          );
+          final controller = scrollView.controller;
+          final maxScrollExtent = controller?.position.maxScrollExtent ?? 100;
+
+          //did not reach the end
+          controller?.jumpTo(maxScrollExtent - 100);
+          await tester.pumpAndSettle();
+          verifyNever(() => _mediaBloc.add(ReachScrollEnd()));
+
+          // reached the end
+          controller?.jumpTo(maxScrollExtent);
+          await tester.pumpAndSettle();
+          verify(() => _mediaBloc.add(ReachScrollEnd()));
+        },
+      );
     },
   );
 }
