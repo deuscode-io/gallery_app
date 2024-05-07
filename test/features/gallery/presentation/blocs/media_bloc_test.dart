@@ -78,7 +78,7 @@ void main() {
     'GIVEN $MediaBloc to test dio exception firing',
     () {
       blocTest<MediaBloc, MediaState>(
-        'WHEN the first request becomes the last one',
+        'WHEN the request gets failed',
         setUp: _whenDioException,
         build: () => MediaBloc(_getMediaUseCase),
         act: (bloc) async {
