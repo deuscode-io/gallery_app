@@ -32,7 +32,6 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPageState extends State<GalleryPage> {
   late GridViewSize _gridViewSize;
-  late UniqueKey _key;
   late ScrollController _scrollController;
   late MediaBloc _mediaBloc;
 
@@ -47,7 +46,6 @@ class _GalleryPageState extends State<GalleryPage> {
       }
     });
     _mediaBloc = Injector.get();
-    _key = UniqueKey();
   }
 
   @override
@@ -62,17 +60,18 @@ class _GalleryPageState extends State<GalleryPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFE1DFDF),
       body: BlocProvider<MediaBloc>(
-        key: _key,
-        create: (_) => _mediaBloc
-          ..add(
+        create: (_) {
+          _mediaBloc.add(
             OpenPage(
-              query: '',
               perPage: _gridViewSize.perPage,
+              query: '',
             ),
-          ),
+          );
+
+          return _mediaBloc;
+        },
         child: BlocBuilder<MediaBloc, MediaState>(
           builder: (context, state) {
-            final textTheme = Theme.of(context).textTheme;
             return Scrollbar(
               controller: _scrollController,
               child: CustomScrollView(
@@ -83,42 +82,17 @@ class _GalleryPageState extends State<GalleryPage> {
                   SliverAppBar(
                     floating: true,
                     title: SearchField(
-                      onSearch: (text) {
-                        _mediaBloc.add(NewQuery(text));
-                      },
+                      onSearch: (text) => _mediaBloc.add(NewQuery(text)),
                     ),
                   ),
-                  if (state.loading && state.media.isEmpty)
-                    const SliverFillRemaining(
-                      child: Center(
-                        child: CupertinoActivityIndicator(
-                          radius: 20,
-                        ),
-                      ),
-                    ),
-                  if (!state.loading && state.media.isEmpty)
-                    SliverFillRemaining(
-                      child: Center(
-                        child: Text(
-                          'Nothing found',
-                          style: textTheme.headlineMedium,
-                        ),
-                      ),
-                    ),
                   if (state.exception != null)
-                    SliverFillRemaining(
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: () => _mediaBloc.add(
-                            ReloadButtonPressed(),
-                          ),
-                          child: Text(
-                            'Reload content',
-                            style: textTheme.headlineMedium,
-                          ),
-                        ),
-                      ),
+                    LoadedFailure(
+                      onPressed: () => _mediaBloc.add(ReloadButtonPressed()),
                     ),
+                  if (state.loading && state.media.isEmpty)
+                    const InitialLoading(),
+                  if (!state.loading && state.media.isEmpty)
+                    const LoadedEmpty(),
                   AppGridView(
                     crossAxisCount: _gridViewSize.crossAxisCount,
                     size: _gridViewSize.size,
@@ -234,6 +208,58 @@ class AppGridView extends StatelessWidget {
 
         return const Center(child: CupertinoActivityIndicator());
       },
+    );
+  }
+}
+
+class InitialLoading extends StatelessWidget {
+  const InitialLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SliverFillRemaining(
+      child: Center(
+        child: CupertinoActivityIndicator(
+          radius: 20,
+        ),
+      ),
+    );
+  }
+}
+
+class LoadedEmpty extends StatelessWidget {
+  const LoadedEmpty({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(
+      child: Center(
+        child: Text(
+          'Nothing found',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
+    );
+  }
+}
+
+class LoadedFailure extends StatelessWidget {
+  const LoadedFailure({super.key, required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(
+      child: Center(
+        child: ElevatedButton(
+          onPressed: onPressed,
+          child: Text(
+            'Reload content',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+        ),
+      ),
     );
   }
 }
