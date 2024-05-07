@@ -12,7 +12,7 @@ import '../../../../../../test_utils/fixture/media_hits_fixture.dart';
 const _query = 'query';
 const _page = 1;
 const _perPage = 50;
-final _requestOptions = RequestOptions(path: '');
+final _requestOptions = RequestOptions();
 
 final _exception = DioException(
   requestOptions: _requestOptions,

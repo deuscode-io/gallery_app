@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gallery_app/features/gallery/presentation/widgets/search_field.dart';
 
 String _callbackValue = '';
-const _query = 'query';
+const _query = '  query     ';
+const _queryTrimmed = 'query';
 
 void main() {
   setUp(() => _callbackValue = '');
@@ -38,7 +39,7 @@ void main() {
           await tester.enterText(find.byType(TextField), _query);
           await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
-          expect(_callbackValue, _query);
+          expect(_callbackValue, _queryTrimmed);
         },
       );
     },
